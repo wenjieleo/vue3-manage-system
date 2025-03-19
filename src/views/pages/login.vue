@@ -50,6 +50,7 @@ import { usePermissStore } from '@/store/permiss';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
+import { userApi } from '@/api';
 
 interface LoginInfo {
     username: string;
@@ -76,24 +77,45 @@ const rules: FormRules = {
     ],
     password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
 };
+
 const permiss = usePermissStore();
 const login = ref<FormInstance>();
-const submitForm = (formEl: FormInstance | undefined) => {
+const submitForm = async (formEl: FormInstance | undefined) => {
     if (!formEl) return;
-    formEl.validate((valid: boolean) => {
+    formEl.validate(async (valid: boolean) => {
+        console.log("valid888>>>", valid)
         if (valid) {
-            ElMessage.success('登录成功');
-            localStorage.setItem('vuems_name', param.username);
-            const keys = permiss.defaultList[param.username == 'admin' ? 'admin' : 'user'];
-            permiss.handleSet(keys);
-            router.push('/');
-            if (checked.value) {
-                localStorage.setItem('login-param', JSON.stringify(param));
-            } else {
-                localStorage.removeItem('login-param');
+            try {
+                const res = await userApi.login(param); 
+                console.log("res2222222>>>", res)
+                if (res.code == 200) {
+                    console.log("123>>>", 123)
+                    // 存储token
+                    localStorage.setItem('token', res.token);
+                    // 存储用户信息
+                    localStorage.setItem('vuems_name', res.user);
+                    // 获取用户权限
+                    // const keys = permiss.defaultList[res.data.userInfo.role === 'admin' ? 'admin' : 'user'];
+                    // permiss.handleSet(keys);
+                    
+                    ElMessage.success('登录成功');
+                    router.push('/');
+                    
+                    // 记住密码
+                    if (checked.value) {
+                        localStorage.setItem('login-param', JSON.stringify(param));
+                    } else {
+                        localStorage.removeItem('login-param');
+                    }
+                } else {
+                    ElMessage.error(res.message || '登录失败111');
+                }
+            } catch (error) {
+                ElMessage.error('登录失败，请检查用户名和密码222');
+                return false;
             }
         } else {
-            ElMessage.error('登录失败');
+            ElMessage.error('请填写完整的登录信息');
             return false;
         }
     });

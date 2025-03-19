@@ -15,15 +15,6 @@
                         </template>
                     </el-input>
                 </el-form-item>
-                <el-form-item prop="email">
-                    <el-input v-model="param.email" placeholder="邮箱">
-                        <template #prepend>
-                            <el-icon>
-                                <Message />
-                            </el-icon>
-                        </template>
-                    </el-input>
-                </el-form-item>
                 <el-form-item prop="password">
                     <el-input
                         type="password"
@@ -34,6 +25,15 @@
                         <template #prepend>
                             <el-icon>
                                 <Lock />
+                            </el-icon>
+                        </template>
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="email">
+                    <el-input v-model="param.email" placeholder="邮箱">
+                        <template #prepend>
+                            <el-icon>
+                                <Email />
                             </el-icon>
                         </template>
                     </el-input>
@@ -52,12 +52,19 @@ import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
 import { Register } from '@/types/user';
+import { userApi } from '@/api';
+
+interface RegisterInfo {
+    username: string;
+    password: string;
+    email: string;
+}
 
 const router = useRouter();
-const param = reactive<Register>({
+const param = reactive<RegisterInfo>({
     username: '',
     password: '',
-    email: '',
+    email: ''
 });
 
 const rules: FormRules = {
@@ -67,18 +74,47 @@ const rules: FormRules = {
             message: '请输入用户名',
             trigger: 'blur',
         },
+        {
+            min: 3,
+            max: 20,
+            message: '用户名长度应在3-20个字符之间',
+            trigger: 'blur',
+        }
     ],
-    password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-    email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
+    password: [
+        { required: true, message: '请输入密码', trigger: 'blur' },
+        {
+            min: 6,
+            max: 20,
+            message: '密码长度应在6-20个字符之间',
+            trigger: 'blur',
+        }
+    ],
+    email: [
+        { required: true, message: '请输入邮箱', trigger: 'blur' },
+        { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
+    ]
 };
 const register = ref<FormInstance>();
-const submitForm = (formEl: FormInstance | undefined) => {
+const submitForm = async (formEl: FormInstance | undefined) => {
     if (!formEl) return;
-    formEl.validate((valid: boolean) => {
+    formEl.validate(async (valid: boolean) => {
         if (valid) {
-            ElMessage.success('注册成功，请登录');
-            router.push('/login');
+            try {
+                const res = await userApi.register(param);
+                console.log("res6564545>>>", res)
+                if (res.code == 200) {
+                    ElMessage.success('注册成功，请登录');
+                    router.push('/login');
+                } else {
+                    ElMessage.error(res.message || '注册失败');
+                }
+            } catch (error) {
+                ElMessage.error('注册失败，请稍后重试');
+                return false;
+            }
         } else {
+            ElMessage.error('请填写完整的注册信息');
             return false;
         }
     });
