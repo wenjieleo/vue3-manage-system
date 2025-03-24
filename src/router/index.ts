@@ -51,6 +51,24 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "system-menu" */ '../views/system/menu.vue'),
             },
             {
+                path: '/blog',
+                name: 'blog',
+                meta: {
+                    title: '博客管理',
+                    noAuth: true,
+                },
+                component: () => import(/* webpackChunkName: "login" */ '../views/pages/blog/index.vue'),
+            },
+            {
+                path: '/blog/addEditBlog',
+                name: 'addEditBlog',
+                meta: {
+                    title: '新增博客',
+                    noAuth: true,
+                },
+                component: () => import(/* webpackChunkName: "login" */ '../views/pages/blog/addEditBlog.vue'),
+            },
+            {
                 path: '/table',
                 name: 'basetable',
                 meta: {

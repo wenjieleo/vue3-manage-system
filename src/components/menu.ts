@@ -31,23 +31,29 @@ export const menuData: Menus[] = [
                 index: '/system-menu',
                 title: '菜单管理',
             },
+            {
+                id: '23',
+                pid: '1',
+                index: '/blog',
+                title: '博客管理',
+            },
         ],
     },
     {
         id: '2',
         title: '组件',
-        index: '2-1',
+        index: '2',
         icon: 'Calendar',
         children: [
             {
                 id: '21',
-                pid: '3',
+                pid: '2',
                 index: '/form',
                 title: '表单',
             },
             {
                 id: '22',
-                pid: '3',
+                pid: '2',
                 index: '/upload',
                 title: '上传',
             },
@@ -89,7 +95,7 @@ export const menuData: Menus[] = [
             },
             {
                 id: '29',
-                pid: '3',
+                pid: '2',
                 index: '29',
                 title: '三级菜单',
                 children: [

@@ -3,7 +3,7 @@
 	"version": "5.5.0",
 	"private": true,
 	"scripts": {
-		"dev": "vite",
+		"dev": "vite --port 8081",
 		"build": "vue-tsc --noEmit && vite build",
 		"serve": "vite preview"
 	},
@@ -11,6 +11,7 @@
 		"@element-plus/icons-vue": "*",
 		"@wangeditor/editor": "^5.1.23",
 		"@wangeditor/editor-for-vue": "^5.1.12",
+		"@vueup/vue-quill": "1.2.0",
 		"axios": "^1.6.3",
 		"countup.js": "^2.8.0",
 		"echarts": "^5.5.0",
